@@ -2,9 +2,8 @@
 Graph Umbraco Components Navigation block
 
 Installation steps:
-1. Install Configs loader https://github.com/graphuk/graph_components_umbraco_config_loader
-2. Copy the folder 'Navigation' to 'Components'
-3. Use it: @Html.Action("Index", "NavigationSurface")
+1. Copy the folder 'Navigation' to 'Components'
+2. Use it: @Html.Action("Index", "NavigationSurface")
 
 Default settings:
 In the NavigationConfig you can find two fields: HomePageAlias and HideFromNavigationPropertyAlias
