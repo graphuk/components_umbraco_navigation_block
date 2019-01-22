@@ -6,16 +6,14 @@ using Umbraco.Web.Mvc;
 
 namespace Graph.Components.Navigation
 {
-	using System.Configuration;
-
 	public class NavigationSurfaceController : SurfaceController
 	{
 		public ActionResult Index()
 		{
 			var topNavigation = new NavigationModel();
-			var home = new UmbracoHelper(UmbracoContext.Current).TypedContentSingleAtXPath($"//{ConfigurationManager.AppSettings[nameof(NavigationConfig.HomePageAlias)]}");
+			var home = new UmbracoHelper(UmbracoContext.Current).TypedContentSingleAtXPath($"//{NavigationConfig.HomePageAlias}");
 			var navSections = home.Children
-				.Where(x => x.GetPropertyValue<bool>(ConfigurationManager.AppSettings[nameof(NavigationConfig.HideFromNavigationPropertyAlias)]) == false)
+				.Where(x => x.GetPropertyValue<bool>(NavigationConfig.HideFromNavigationPropertyAlias) == false)
 				.ToList();
 			var sections = new List<NavigationSection>();
 
@@ -23,7 +21,7 @@ namespace Graph.Components.Navigation
 				.Select(navSection =>
 				{
 					var sectionItems = navSection.Children
-						.Where(item => item.GetPropertyValue<bool>(ConfigurationManager.AppSettings[nameof(NavigationConfig.HideFromNavigationPropertyAlias)]) == false)
+						.Where(item => item.GetPropertyValue<bool>(NavigationConfig.HideFromNavigationPropertyAlias) == false)
 						.ToList();
 					var isActive = navSection.Id == UmbracoContext.Current.PageId
 									|| sectionItems.Any(item => item.Id == UmbracoContext.Current.PageId);
