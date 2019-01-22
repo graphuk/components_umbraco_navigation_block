@@ -3,6 +3,8 @@ using System.Linq;
 using System.Web.Mvc;
 using Umbraco.Web;
 using Umbraco.Web.Mvc;
+using Umbraco.Core.Models;
+using System;
 
 namespace Graph.Components.Navigation
 {
@@ -18,33 +20,46 @@ namespace Graph.Components.Navigation
 			var sections = new List<NavigationSection>();
 
 			var contentSections = navSections
-				.Select(navSection =>
-				{
-					var sectionItems = navSection.Children
-						.Where(item => item.GetPropertyValue<bool>(NavigationConfig.HideFromNavigationPropertyAlias) == false)
-						.ToList();
-					var isActive = navSection.Id == UmbracoContext.Current.PageId
-									|| sectionItems.Any(item => item.Id == UmbracoContext.Current.PageId);
-
-					return new NavigationSection
-					{
-						Title = navSection.Name,
-						Url = navSection.Url,
-						NavigationItems = sectionItems
-							.Select(item =>
-								new NavigationItem
-								{
-									Title = item.Name,
-									Url = item.Url
-								}),
-						IsActive = isActive
-					};
-				}).ToList();
+				.Select(MapToNavigationSection).ToList();
 
 			sections.AddRange(contentSections);
 			topNavigation.NavigationSections = sections;
 
-			return View("/Components/Navigation/Views/Navigation.cshtml", topNavigation);
+			return View("/App_Plugins/Navigation/Views/Navigation.cshtml", topNavigation);
 		}
+
+		private static Func<IPublishedContent, NavigationSection> MapToNavigationSection => navSection =>
+		{
+			var sectionItems = navSection.Children
+				.Where(item => item.GetPropertyValue<bool>(NavigationConfig.HideFromNavigationPropertyAlias) == false)
+				.ToList();
+			var isActive = CheckIsActive(navSection, sectionItems);
+
+			return CreateNavigationSection(navSection, sectionItems, isActive);
+		};
+
+		private static bool CheckIsActive(IPublishedContent navSection, List<IPublishedContent> sectionItems)
+		{
+			return navSection.Id == UmbracoContext.Current.PageId
+				   || sectionItems.Any(item => item.Id == UmbracoContext.Current.PageId);
+		}
+
+		private static NavigationSection CreateNavigationSection(IPublishedContent navSection, IEnumerable<IPublishedContent> sectionItems, bool isActive)
+		{
+			return new NavigationSection
+			{
+				Title = navSection.Name,
+				Url = navSection.Url,
+				NavigationItems = sectionItems
+					.Select(MapToNavigationItem),
+				IsActive = isActive
+			};
+		}
+
+		private static Func<IPublishedContent, NavigationItem> MapToNavigationItem => item => new NavigationItem
+		{
+			Title = item.Name,
+			Url = item.Url
+		};
 	}
 }
