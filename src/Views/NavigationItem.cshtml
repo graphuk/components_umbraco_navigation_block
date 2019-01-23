@@ -1,0 +1,20 @@
+﻿@using System.Web.Mvc.Html
+@model Graph.Components.Navigation.NavigationItem
+@{
+	var navSectionHasChildren = Model.Branches != null && Model.Branches.Any();
+}
+
+<div class="navigation-menu__item @(navSectionHasChildren ? "navigation-menu__item_parent" : "") @(Model.IsActive ? "navigation-menu__item_active" : "") navigation-menu__item_level-@Model.Level">
+	<a class="navigation-menu__link" href="@Model.Url">
+		@Model.Title
+	</a>
+	@if (navSectionHasChildren)
+	{
+		<div class="navigation-menu__section">
+			@foreach (var item in Model.Branches)
+			{
+				Html.RenderPartial("/App_Plugins/NavigationBlock/Views/NavigationItem.cshtml", item);
+			}
+		</div>
+	}
+</div>

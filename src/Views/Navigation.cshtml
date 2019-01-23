@@ -1,30 +1,14 @@
-﻿@model Graph.Components.Navigation.NavigationModel
+﻿@using System.Web.Mvc.Html
+@model Graph.Components.Navigation.NavigationModel
 
 <div class="navigation">
 	<a href="/" title="Go to home page" class="navigation__logo">Logo</a>
 	<div class="navigation-menu">
 		<span class="navigation-menu__trigger"></span>
 		<div class="navigation-menu__container">
-			@foreach (var navSection in Model.NavigationSections)
+			@foreach (var navigationItem in Model.Branches)
 			{
-				var navSectionHasChildren = navSection.NavigationItems != null && navSection.NavigationItems.Any();
-
-				<div class="navigation-menu__item @(navSectionHasChildren ? "navigation-menu__item_parent" : "") @(navSection.IsActive ? "navigation-menu__item_active" : "")">
-					<a class="navigation-menu__link" href="@navSection.Url">
-						@navSection.Title
-					</a>
-					@if (navSectionHasChildren)
-					{
-						<div class="navigation-menu__section">
-							@foreach (var item in navSection.NavigationItems)
-							{
-								<div class="navigation-menu__section-item">
-									<a class="navigation-menu__section-link" href="@item.Url"><span class="navigation-menu__section-link-text">@item.Title</span></a>
-								</div>
-							}
-						</div>
-					}
-				</div>
+				Html.RenderPartial("/App_Plugins/NavigationBlock/Views/NavigationItem.cshtml", navigationItem);
 			}
 		</div>
 	</div>

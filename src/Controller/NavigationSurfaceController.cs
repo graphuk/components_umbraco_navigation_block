@@ -3,6 +3,7 @@ using System.Linq;
 using System.Web.Mvc;
 using Umbraco.Web;
 using Umbraco.Web.Mvc;
+using Umbraco.Core.Models;
 
 namespace Graph.Components.Navigation
 {
@@ -10,41 +11,41 @@ namespace Graph.Components.Navigation
 	{
 		public ActionResult Index()
 		{
-			var topNavigation = new NavigationModel();
 			var home = new UmbracoHelper(UmbracoContext.Current).TypedContentSingleAtXPath($"//{NavigationConfig.HomePageAlias}");
-			var navSections = home.Children
-				.Where(x => x.GetPropertyValue<bool>(NavigationConfig.HideFromNavigationPropertyAlias) == false)
-				.ToList();
-			var sections = new List<NavigationSection>();
+			var navigation = new NavigationModel
+			{
+				Branches = GetBranches(home, home.Children.Where(GetFilteredChildren).ToArray())
+			};
 
-			var contentSections = navSections
-				.Select(navSection =>
+			return View("/App_Plugins/NavigationBlock/Views/Navigation.cshtml", navigation);
+		}
+
+		private static IEnumerable<NavigationItem> GetBranches(IPublishedContent parent, IPublishedContent[] items)
+		{
+			return items
+				.Where(x => x.Parent.Id == parent.Id)
+				.OrderBy(x => x.SortOrder)
+				.Select(x => new NavigationItem
 				{
-					var sectionItems = navSection.Children
-						.Where(item => item.GetPropertyValue<bool>(NavigationConfig.HideFromNavigationPropertyAlias) == false)
-						.ToList();
-					var isActive = navSection.Id == UmbracoContext.Current.PageId
-									|| sectionItems.Any(item => item.Id == UmbracoContext.Current.PageId);
+					IsActive = CheckIsActive(x, items),
+					Title = x.Name,
+					Url = x.Url,
+					Level = x.Level - 1,
+					Branches = NavigationConfig.NavigationDeepLevel > x.Level - 1 
+								? GetBranches(x, x.Children.Where(GetFilteredChildren).ToArray()) 
+								: null
+				});
+		}
 
-					return new NavigationSection
-					{
-						Title = navSection.Name,
-						Url = navSection.Url,
-						NavigationItems = sectionItems
-							.Select(item =>
-								new NavigationItem
-								{
-									Title = item.Name,
-									Url = item.Url
-								}),
-						IsActive = isActive
-					};
-				}).ToList();
+		private static bool GetFilteredChildren(IPublishedContent item)
+		{
+			return item.GetPropertyValue<bool>(NavigationConfig.HideFromNavigationPropertyAlias) == false;
+		}
 
-			sections.AddRange(contentSections);
-			topNavigation.NavigationSections = sections;
-
-			return View("/Components/Navigation/Views/Navigation.cshtml", topNavigation);
+		private static bool CheckIsActive(IPublishedContent navSection, IEnumerable<IPublishedContent> sectionItems)
+		{
+			return navSection.Id == UmbracoContext.Current.PageId
+				   || sectionItems.Any(item => item.Id == UmbracoContext.Current.PageId);
 		}
 	}
 }
