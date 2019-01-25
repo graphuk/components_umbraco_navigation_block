@@ -2,7 +2,7 @@
 {
 	public static class NavigationConfig
 	{
-		public static string HomePageAlias => "home";
+		public static string HomePageId => "ID_HERE";
 
 		public static string HideFromNavigationPropertyAlias => "hideFromTopNavigation";
 
