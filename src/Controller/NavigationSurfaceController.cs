@@ -11,7 +11,7 @@ namespace Graph.Components.Navigation
 	{
 		public ActionResult Index()
 		{
-			var home = new UmbracoHelper(UmbracoContext.Current).TypedContentSingleAtXPath($"//{NavigationConfig.HomePageAlias}");
+			var home = new UmbracoHelper(UmbracoContext.Current).TypedContent(NavigationConfig.HomePageId);
 			var navigation = new NavigationModel
 			{
 				Branches = GetBranches(home, home.Children.Where(GetFilteredChildren).ToArray())
