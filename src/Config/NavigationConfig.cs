@@ -4,7 +4,7 @@
 	{
 		public static string HomePageId => "ID_HERE";
 
-		public static string HideFromNavigationPropertyAlias => "hideFromTopNavigation";
+		public static string HideFromNavigationPropertyAlias => "umbracoNavihide";
 
 		public static int NavigationDeepLevel => 3;
 	}
