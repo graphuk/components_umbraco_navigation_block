@@ -39,7 +39,7 @@ namespace Graph.Components.Navigation
 
 		private static bool GetFilteredChildren(IPublishedContent item)
 		{
-			return item.GetPropertyValue<bool>(NavigationConfig.HideFromNavigationPropertyAlias) == false;
+			return item.IsVisible();
 		}
 
 		private static bool CheckIsActive(IPublishedContent navSection, IEnumerable<IPublishedContent> sectionItems)
