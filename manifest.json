@@ -1,5 +1,5 @@
 {
 	"name": "NavigationBlock",
 	"destination": "App_Plugins",
-	"addToCsproj": true,
+	"addToCsproj": true
 }
