@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 using Umbraco.Web;
@@ -9,15 +10,26 @@ namespace Graph.Components.Navigation
 {
 	public class NavigationSurfaceController : SurfaceController
 	{
+		private readonly ICacheStore _cacheStore = CacheService.GetCacheStore(TimeSpan.FromMinutes(30));
+
 		public ActionResult Index()
 		{
-			var home = new UmbracoHelper(UmbracoContext.Current).TypedContent(NavigationConfig.HomePageId);
-			var navigation = new NavigationModel
+			var navigationModel = _cacheStore.GetOrLoadValue("Navigation", () =>
 			{
-				Branches = GetBranches(home, home.Children.Where(GetFilteredChildren).ToArray())
-			};
+				var home = new UmbracoHelper(UmbracoContext.Current)
+					.TypedContent(NavigationConfig.HomePageId);
 
-			return View("/App_Plugins/NavigationBlock/Views/Navigation.cshtml", navigation);
+				var items = home.Children
+					.Where(GetFilteredChildren)
+					.ToArray();
+
+				return new NavigationModel
+				{
+					Branches = GetBranches(home, items)
+				};
+			});
+
+			return View("/App_Plugins/NavigationBlock/Views/Navigation.cshtml", navigationModel);
 		}
 
 		private static IEnumerable<NavigationItem> GetBranches(IPublishedContent parent, IPublishedContent[] items)
@@ -31,8 +43,8 @@ namespace Graph.Components.Navigation
 					Title = x.Name,
 					Url = x.Url,
 					Level = x.Level - 1,
-					Branches = NavigationConfig.NavigationDeepLevel > x.Level - 1 
-								? GetBranches(x, x.Children.Where(GetFilteredChildren).ToArray()) 
+					Branches = NavigationConfig.NavigationDeepLevel > x.Level - 1
+								? GetBranches(x, x.Children.Where(GetFilteredChildren).ToArray())
 								: null
 				});
 		}
