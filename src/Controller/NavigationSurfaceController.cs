@@ -14,7 +14,7 @@ namespace Graph.Components.Navigation
 
 		public ActionResult Index()
 		{
-			var navigationModel = _cacheStore.GetOrLoadValue("Navigation", () =>
+			var navigationModel = _cacheStore.GetOrLoadValue(NavigationConfig.NavigationCacheKey, () =>
 			{
 				var home = new UmbracoHelper(UmbracoContext.Current)
 					.TypedContent(NavigationConfig.HomePageId);

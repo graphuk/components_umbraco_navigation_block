@@ -1,4 +1,5 @@
 using System.Web;
+using Graph.Components.Navigation;
 using Umbraco.Core;
 using Umbraco.Core.Events;
 using Umbraco.Core.Models;
@@ -28,7 +29,7 @@ namespace Graph.Components.Navigation
 
 		private static void ClearNavigation()
 		{
-			HttpContext.Current.Cache.Remove("Navigation");
+			HttpContext.Current.Cache.Remove(NavigationConfig.NavigationCacheKey);
 		}
 	}
 }

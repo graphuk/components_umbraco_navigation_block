@@ -7,5 +7,7 @@
 		public static string HideFromNavigationPropertyAlias => "umbracoNavihide";
 
 		public static int NavigationDeepLevel => 3;
+
+		public static string NavigationCacheKey = "Navigation";
 	}
 }
