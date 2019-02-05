@@ -2,14 +2,16 @@
 @model Graph.Components.Navigation.NavigationModel
 
 <div class="navigation">
-	<a href="/" title="Go to home page" class="navigation__logo">Logo</a>
-	<div class="navigation-menu">
-		<span class="navigation-menu__trigger"></span>
-		<div class="navigation-menu__container">
-			@foreach (var navigationItem in Model.Branches)
-			{
-				Html.RenderPartial("/App_Plugins/NavigationBlock/Views/NavigationItem.cshtml", navigationItem);
-			}
+	<div class="navigation__container">
+		<a href="/" title="Go to home page" class="navigation__logo">Logo</a>
+		<div class="navigation__menu navigation-menu">
+			<span class="navigation-menu__trigger"></span>
+			<div class="navigation-menu__container">
+				@foreach (var navigationItem in Model.Branches)
+				{
+					Html.RenderPartial("/App_Plugins/NavigationBlock/Views/NavigationItem.cshtml", navigationItem);
+				}
+			</div>
 		</div>
 	</div>
 </div>
